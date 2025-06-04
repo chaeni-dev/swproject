@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>회원가입 - Re:turn</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded shadow w-full max-w-md">
+    <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">회원가입</h2>
+    <form id="signupForm">
+      <div class="mb-4">
+        <label for="studentId" class="block text-gray-700 mb-2">학번</label>
+        <input id="studentId" type="text" required placeholder="예: 20231234"
+          class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
+      </div>
+      <div class="mb-4">
+        <label for="name" class="block text-gray-700 mb-2">이름</label>
+        <input id="name" type="text" required placeholder="홍길동"
+          class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
+      </div>
+      <div class="mb-6">
+        <label for="password" class="block text-gray-700 mb-2">비밀번호</label>
+        <input id="password" type="password" required
+          class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400" />
+      </div>
+      <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">회원가입</button>
+    </form>
+    <p class="text-center text-sm text-gray-600 mt-4">
+      이미 계정이 있으신가요?
+      <a href="login.html" class="text-blue-500 hover:underline">로그인</a>
+    </p>
+  </div>
+
+  <script>
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const studentId = document.getElementById('studentId').value.trim();
+      const password = document.getElementById('password').value;
+      const name = document.getElementById('name').value.trim();
+
+      if (!studentId || !password || !name) {
+        alert('모든 항목을 입력하세요.');
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:3000/api/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ studentId, password, name })
+        });
+
+        if (response.ok) {
+          alert('회원가입 성공! 로그인 페이지로 이동합니다.');
+          window.location.href = 'login.html';
+        } else if (response.status === 409) {
+          alert('이미 등록된 학번입니다.');
+        } else {
+          alert('회원가입 실패. 다시 시도하세요.');
+        }
+      } catch (err) {
+        alert('서버와 통신 중 오류가 발생했습니다.');
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
