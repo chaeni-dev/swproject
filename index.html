@@ -1,11 +1,207 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <title>DA:Return - 분실물 찾기 플랫폼</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    
+<body class="bg-gray-50 font-sans">
+  <header class="bg-white shadow p-4 flex items-center justify-between">
+    <h1 class="text-2xl font-bold text-blue-600">DA:Return</h1>
+    <div id="userActions" class="flex items-center space-x-4">
+      <!-- 알림 버튼 (종 이모지) -->
+      <button id="notificationBtn" class="text-gray-600 hover:text-blue-500 text-xl relative" title="알림">
+        🔔
+      </button>
+
+      <!-- 로그인 전 -->
+      <div id="notLoggedIn" class="flex items-center space-x-4">
+        <button onclick="location.href='login.html'" class="text-sm px-4 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200">로그인</button>
+        <button onclick="location.href='signup.html'" class="text-sm px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">회원가입</button>
+      </div>
+      <!-- 로그인 후 -->
+      <div id="loggedIn" class="hidden items-center space-x-4">
+        <span id="welcomeMsg" class="text-gray-700"></span>
+        <button id="logoutBtn" class="text-sm px-4 py-2 bg-red-400 text-white rounded hover:bg-red-500">로그아웃</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 알림 창 (초기 숨김) -->
+  <div id="notificationPopup" class="hidden absolute top-16 right-4 w-64 bg-white border border-gray-300 rounded shadow-lg p-4 z-50">
+    <h3 class="font-semibold mb-2">알림</h3>
+    <ul id="notificationList" class="text-gray-700 text-sm max-h-48 overflow-y-auto">
+      <!-- 알림 아이템들 -->
+    </ul>
+    <button id="closeNotification" class="mt-2 text-sm text-blue-500 hover:underline">닫기</button>
+  </div>
+
+  <!-- 검색창 -->
+  <section class="bg-white shadow p-6 flex justify-center mt-4">
+    <input
+      type="text"
+      placeholder="분실물 또는 습득물을 검색하세요..."
+      class="w-1/2 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+    />
+  </section>
+
+  <!-- 네비게이션 -->
+ <nav class="flex justify-center mt-4 space-x-6 text-gray-700 text-lg">
+  <a href="register.html" class="hover:text-blue-500">등록</a>
+  <a href="search.html" class="hover:text-blue-500">찾기</a>
+  <a href="match.html" class="hover:text-blue-500">매칭</a>
+  <a href="board.html" class="hover:text-blue-500">전체게시판</a>
+  <a href="chat.html" class="hover:text-blue-500">채팅</a>
+</nav>
+
+
+  <!-- 메인 콘텐츠 (가로 배치) -->
+   <main class="flex justify-between gap-4 p-6">
+    <!-- 최신 분실물 -->
+    <section class="w-1/3 bg-white p-4 rounded shadow">
+      <h2 class="text-xl font-semibold ml-2 mb-4 text-gray-800">최신 분실물</h2>
+      <div id="lost-list" class="grid grid-cols-2 gap-4">
+      </div>
+    </section>
+
+    <!-- 최신 습득물 -->
+    <section class="w-1/3 bg-white p-4 rounded shadow">
+      <h2 class="text-xl font-semibold ml-2 mb-4 text-gray-800">최신 습득물</h2>
+      <div id="found-list" class="grid grid-cols-2 gap-4">
+      </div>
+    </section>
+
+    <!-- 학교 지도 -->
+    <aside class="w-1/3 bg-white p-4 rounded shadow">
+      <h2 class="text-xl font-semibold mb-2 text-gray-800">교내 지도</h2>
+      <img src="./학교지도.jpg" alt="학교 지도" class="w-full h-auto rounded" />
+    </aside>
+  </main>
+
+  
+
+  <script>
+    const userStr = localStorage.getItem('returnUser');
+    const notLoggedInDiv = document.getElementById('notLoggedIn');
+    const loggedInDiv = document.getElementById('loggedIn');
+    const welcomeMsg = document.getElementById('welcomeMsg');
+    const notificationBtn = document.getElementById('notificationBtn');
+    const notificationPopup = document.getElementById('notificationPopup');
+    const notificationList = document.getElementById('notificationList');
+    const closeNotificationBtn = document.getElementById('closeNotification');
+
+    // 로그인 상태에 따라 UI 변경
+    let isLoggedIn = false;
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      welcomeMsg.textContent = `${user.name}님, 환영합니다!`;
+      loggedInDiv.classList.remove('hidden');
+      notLoggedInDiv.classList.add('hidden');
+      isLoggedIn = true;
+    } else {
+      loggedInDiv.classList.add('hidden');
+      notLoggedInDiv.classList.remove('hidden');
+    }
+
+    // 로그아웃 버튼
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('returnUser');
+      loggedInDiv.classList.add('hidden');
+      notLoggedInDiv.classList.remove('hidden');
+      isLoggedIn = false;
+      notificationPopup.classList.add('hidden');
+      alert('로그아웃 되었습니다.');
+    });
+
+    // 알림 버튼 클릭 시
+    notificationBtn.addEventListener('click', () => {
+      if (notificationPopup.classList.contains('hidden')) {
+        // 팝업을 열기 전에 내용 세팅
+        if (isLoggedIn) {
+          // 로그인 된 경우 알림 목록 (예시)
+          notificationList.innerHTML = `
+            <li>📢 분실물 '노트북'이 등록되었습니다.</li>
+            <li>📢 습득물 '열쇠'가 발견되었습니다.</li>
+            <li>📢 매칭 요청이 도착했습니다.</li>
+          `;
+        } else {
+          // 로그인 안 된 경우 안내 문구
+          notificationList.innerHTML = `<li>로그인 후 확인할 수 있습니다.</li>`;
+        }
+        notificationPopup.classList.remove('hidden');
+      } else {
+        notificationPopup.classList.add('hidden');
+      }
+    });
+
+    // 닫기 버튼 클릭 시 팝업 닫기
+    closeNotificationBtn.addEventListener('click', () => {
+      notificationPopup.classList.add('hidden');
+    });
+
+    // 팝업 외부 클릭시 닫기 (선택사항)
+    window.addEventListener('click', (e) => {
+      if (!notificationPopup.contains(e.target) && !notificationBtn.contains(e.target)) {
+        notificationPopup.classList.add('hidden');
+      }
+    });
+
+function getRelativeTime(dateString) {
+  const now = new Date();
+  const past = new Date(dateString.replace(' ', 'T'));
+  if (isNaN(past)) return '날짜 오류';
+
+  const diffMs = now - past;
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHr  = Math.floor(diffMin / 60);
+  const diffDay = Math.floor(diffHr / 24);
+
+  if (diffSec < 60) return '방금 전';
+  if (diffMin < 60) return `${diffMin}분 전`;
+  if (diffHr  < 24) return `${diffHr}시간 전`;
+  if (diffDay < 7)  return `${diffDay}일 전`;
+
+  return past.toLocaleDateString(); // 7일 이상은 날짜 표시
+}
+
+
+
+  // 분실물 로딩
+  fetch('/api/products/lost')
+    .then(res => res.json())
+    .then(items => {
+      const container = document.getElementById('lost-list');
+      items.forEach(item => {
+        container.innerHTML += `
+          <div class="bg-white p-1 rounded-xl">
+            <img src="${item.image_url}" alt="${item.name}"
+              class="w-full h-48 object-cover rounded-lg mb-2" />
+            <h3 class="text-gray-800 text-sm text-base ml-1 mb-1">${item.name}</h3>
+            <p class="text-xs text-gray-400 text-base ml-1 mb-1">${getRelativeTime(item.created_at)}</p>
+          </div>
+        `;
+      });
+    });
+
+  // 습득물 로딩
+  fetch('/api/products/found')
+    .then(res => res.json())
+    .then(items => {
+      const container = document.getElementById('found-list');
+      items.forEach(item => {
+        container.innerHTML += `
+          <div class="bg-white p-1 rounded-xl">
+            <img src="${item.image_url}" alt="${item.name}"
+              class="w-full h-48 object-cover rounded-lg mb-2" />
+            <h3 class="text-gray-800 text-sm text-base ml-1 mb-1">${item.name}</h3>
+            <p class="text-xs text-gray-400 text-base ml-1 mb-1">${getRelativeTime(item.created_at)}</p>
+          </div>
+        `;
+      });
+    });
+</script>
+
 </body>
 </html>

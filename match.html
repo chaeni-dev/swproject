@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Re:turn - 분실물 매칭</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans">
+  <header class="bg-white shadow p-6 flex items-center justify-between">
+      <a href="index.html" class="text-2xl font-bold text-blue-600 hover:text-blue-700 cursor-pointer">
+    DA:Return
+  </a>
+    <nav class="space-x-6 text-lg">
+      <a href="register.html" class="hover:text-blue-500">등록</a>
+      <a href="search.html" class="hover:text-blue-500">찾기</a>
+      <a href="match.html" class="text-blue-500 font-semibold">매칭</a>
+      <a href="board.html" class="hover:text-blue-500">전체게시판</a>
+      <a href="chat.html" class="hover:text-blue-500">채팅</a>
+    </nav>
+  </header>
+  <main class="max-w-6xl mx-auto mt-16 bg-white p-12 rounded shadow-lg min-h-[700px]">
+    <h2 class="text-2xl font-bold mb-10 text-gray-800">분실물-습득물 매칭</h2>
+    <div class="flex gap-16">
+      <!-- 좌측: 정보 입력/표시 영역 -->
+      <div class="w-1/2 flex flex-col gap-6">
+        <!-- 분실물/습득물 선택 -->
+        <div class="flex gap-4">
+          <select class="w-1/2 p-3 border rounded font-semibold text-lg">
+            <option>분실물</option>
+            <option>습득물</option>
+          </select>
+          <!-- 카메라 아이콘 (사진 업로드 버튼) -->
+          <label class="w-14 h-14 flex items-center justify-center border rounded cursor-pointer bg-gray-100 hover:bg-gray-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h2l2-3h6l2 3h2a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2z" />
+              <circle cx="12" cy="13" r="4" />
+            </svg>
+            <input type="file" accept="image/*" class="hidden" />
+          </label>
+        </div>
+        <!-- 사진 미리보기 (예시) -->
+        <div class="w-full h-64 bg-gray-200 flex items-center justify-center rounded text-3xl text-gray-400">
+          사진
+        </div>
+        <!-- 인식한 카테고리 or 사용자 선택 -->
+        <select class="w-full p-3 border rounded text-lg">
+          <option>카테고리 선택</option>
+          <option>전자기기</option>
+          <option>지갑/금전</option>
+          <option>의류</option>
+          <option>기타</option>
+        </select>
+      </div>
+      <!-- 우측: 매칭 기능 사용 방법 안내 -->
+      <div class="w-1/2 flex flex-col">
+        <div class="w-full h-80 p-6 border rounded bg-gray-50 text-xl text-gray-700 leading-relaxed overflow-y-auto">
+          <strong class="block mb-3 text-blue-600 text-2xl">[매칭 기능 사용 방법]</strong>
+          1. <b>분실물</b> 또는 <b>습득물</b> 정보를 정확히 선택하고, <b>사진</b>과 <b>카테고리</b>를 등록해 주세요.<br><br>
+          2. <b>매칭 요청</b> 버튼을 클릭하시면 시스템이 유사한 항목을 자동으로 매칭합니다.<br><br>
+          3. 매칭 요청 후에는 <b>채팅</b>을 통해 직접 연락이 가능합니다.<br><br>
+        </div>
+        <button class="mt-6 w-full bg-blue-500 text-white py-3 rounded hover:bg-blue-600 text-xl font-semibold">매칭 요청</button>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

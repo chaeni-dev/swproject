@@ -1,0 +1,38 @@
+<!-- board.html (전체게시판) -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Re:turn - 전체게시판</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans">
+  <header class="bg-white shadow p-4 flex items-center justify-between">
+    <a href="index.html" class="text-2xl font-bold text-blue-600 hover:text-blue-700 cursor-pointer">
+      DA:Return
+    </a>
+    <nav class="space-x-4">
+      <a href="register.html" class="hover:text-blue-500">등록</a>
+      <a href="search.html" class="hover:text-blue-500">찾기</a>
+      <a href="match.html" class="hover:text-blue-500">매칭</a>
+      <a href="board.html" class="text-blue-500 font-semibold">전체게시판</a>
+      <a href="chat.html" class="hover:text-blue-500">채팅</a>
+    </nav>
+  </header>
+  <main class="max-w-2xl mx-auto mt-10 bg-white p-8 rounded shadow">
+    <h2 class="text-xl font-bold mb-6 text-gray-800">전체게시판</h2>
+    <ul>
+      <li class="mb-4 border-b pb-2">
+        <span class="font-semibold">[공지]</span> 분실물 등록 방법 안내
+      </li>
+      <li class="mb-4 border-b pb-2">
+        <span class="font-semibold">[질문]</span> 분실물 찾는 팁이 있나요?
+      </li>
+      <li class="mb-4 border-b pb-2">
+        <span class="font-semibold">[후기]</span> 분실물을 찾았어요! 감사합니다.
+      </li>
+    </ul>
+    <button onclick="location.href='write.html'" class="mt-6 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">글쓰기</button>
+  </main>
+</body>
+</html>
