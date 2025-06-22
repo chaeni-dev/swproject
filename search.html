@@ -5,41 +5,46 @@
   <title>Re:turn - 분실물 찾기</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    // 예시 데이터 (실제 개발 시 서버에서 받아오거나 localStorage 등에서 불러올 수 있음)
-    const items = [
-      { 
-        type: '분실물', 
-        name: '지갑', 
-        place: '도서관', 
-        date: '2025-06-01', 
-        desc: '검정색 가죽, 카드 3장',
-        photo: 'https://via.placeholder.com/60x60?text=지갑'
-      },
-      { 
-        type: '분실물', 
-        name: '우산', 
-        place: '카페', 
-        date: '2025-05-28', 
-        desc: '파란색 3단 우산',
-        photo: 'https://via.placeholder.com/60x60?text=우산'
-      },
-      { 
-        type: '습득물', 
-        name: '이어폰', 
-        place: '강의실', 
-        date: '2025-06-03', 
-        desc: '흰색 무선 이어폰',
-        photo: 'https://via.placeholder.com/60x60?text=이어폰'
-      },
-      { 
-        type: '습득물', 
-        name: '학생증', 
-        place: '버스정류장', 
-        date: '2025-06-02', 
-        desc: '홍길동 이름, 파란색 카드지갑',
-        photo: 'https://via.placeholder.com/60x60?text=학생증'
-      },
-    ];
+    let items = [];
+
+    async function loadItems() {
+        try {
+            const [lostRes, foundRes] = await Promise.all([
+            fetch('/api/products/lost'),
+            fetch('/api/products/found')
+            ]);
+            const lost = await lostRes.json();
+            const found = await foundRes.json();
+
+            items = [
+ ...lost.map(i => ({
+                type: '분실물',
+                name: i.name,
+                place: i.location,
+                date: i.date,
+                desc: i.description,
+                photo: i.image_url,
+                created_at: i.created_at 
+            })),
+            ...found.map(i => ({
+                type: '습득물',
+                name: i.name,
+                place: i.location,
+                date: i.date,
+                desc: i.description,
+                photo: i.image_url,
+                created_at: i.created_at 
+            }))
+         ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            renderList();
+            
+        } catch (err) {
+            console.error(' 데이터 로딩 실패:', err);
+        }
+    }
+    
+      
 
     // 검색 및 리스트 갱신 함수
     function renderList() {
@@ -63,13 +68,15 @@
 
       filtered.forEach(item => {
         const color = item.type === '분실물' ? 'text-blue-500' : 'text-green-500';
+        const formattedDate = new Date(item.date).toISOString().split('T')[0];
+
         list.innerHTML += `
           <li class="mb-4 border-b pb-2 flex items-center">
             <img src="${item.photo}" alt="사진" class="w-16 h-16 object-cover rounded mr-4 border" />
             <div>
               <span class="font-semibold ${color}">${item.type}</span> |
               <span class="font-bold">${item.name}</span>
-              <span class="text-gray-500 ml-2">${item.place} (${item.date})</span>
+              <span class="text-gray-500 ml-2">${item.place} (${formattedDate})</span>
               <div class="text-gray-700 mt-1 text-sm">${item.desc}</div>
             </div>
           </li>
@@ -80,14 +87,15 @@
     // 이벤트 연결
     window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('search-input').addEventListener('input', renderList);
-      renderList();
+      loadItems();
     });
+
   </script>
 </head>
 <body class="bg-gray-50 font-sans">
   <header class="bg-white shadow p-4 flex items-center justify-between">
       <a href="index.html" class="text-2xl font-bold text-blue-600 hover:text-blue-700 cursor-pointer">
-    Re:turn
+    DA:Return
   </a>
     <nav class="space-x-4">
       <a href="register.html" class="hover:text-blue-500">등록</a>

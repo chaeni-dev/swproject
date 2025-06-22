@@ -17,7 +17,7 @@
 <body class="bg-gray-50 font-sans">
   <header class="bg-white shadow p-4 flex items-center justify-between">
       <a href="index.html" class="text-2xl font-bold text-blue-600 hover:text-blue-700 cursor-pointer">
-    Re:turn
+    DA:Return
   </a>
     <nav class="space-x-4">
       <a href="register.html" class="text-blue-500 font-semibold">등록</a>
@@ -41,27 +41,63 @@
     </div>
     <!-- 폼 -->
     <h2 id="form-title" class="text-xl font-bold mb-6 text-gray-800">분실물 등록</h2>
-    <form>
-      <label class="block mb-2 text-gray-700">물품명</label>
-      <input type="text" class="w-full p-2 border rounded mb-4" placeholder="예: 지갑" />
+    <form id="report-form" enctype="multipart/form-data">
+        <label class="block mb-2 text-gray-700">물품명</label>
+        <input id="itemName" type="text" class="w-full p-2 border rounded mb-4" placeholder="예: 지갑" />
 
-      <label class="block mb-2 text-gray-700">장소</label>
-      <input type="text" class="w-full p-2 border rounded mb-4" placeholder="예: 도서관" />
+        <label class="block mb-2 text-gray-700">장소</label>
+        <input id="itemLocation" type="text" class="w-full p-2 border rounded mb-4" placeholder="예: 도서관" />
 
-      <label class="block mb-2 text-gray-700">날짜</label>
-      <input type="date" class="w-full p-2 border rounded mb-4" />
+        <label class="block mb-2 text-gray-700">날짜</label>
+        <input id="itemDate" type="date" class="w-full p-2 border rounded mb-4" />
 
-      <label class="block mb-2 text-gray-700">상세 설명</label>
-      <textarea class="w-full p-2 border rounded mb-4" rows="4" placeholder="특징, 색상 등"></textarea>
+        <label class="block mb-2 text-gray-700">상세 설명</label>
+        <textarea id="itemDescription" class="w-full p-2 border rounded mb-4" rows="4" placeholder="특징, 색상 등"></textarea>
 
-      <!-- 사진 등록 추가 -->
-      <label class="block mb-2 text-gray-700">사진 등록</label>
-      <input type="file" accept="image/*" multiple class="w-full p-2 border rounded mb-4" />
+        <label class="block mb-2 text-gray-700">사진 등록</label>
+        <input id="itemImage" type="file" name="image" accept="image/*" multiple class="w-full p-2 border rounded mb-4" />
 
-      <button id="submit-btn" type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
-        분실물 등록하기
-      </button>
+        <button id="submit-btn" type="submit" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
+            분실물 등록하기
+        </button>
     </form>
   </main>
+
+  <script>
+  document.getElementById('report-form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  const type = document.querySelector('input[name="type"]:checked').value;
+  const name = document.getElementById('itemName').value;
+  const location = document.getElementById('itemLocation').value;
+  const date = document.getElementById('itemDate').value;
+  const description = document.getElementById('itemDescription').value;
+  const fileInput = document.getElementById('itemImage');
+
+  const formData = new FormData();
+  formData.append('name', name);
+  formData.append('location', location);
+  formData.append('date', date);
+  formData.append('description', description);
+  formData.append('type', type);
+  if (fileInput.files[0]) {
+    formData.append('image', fileInput.files[0]);
+  }
+
+  const response = await fetch(`/api/report/${type}`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (response.ok) {
+    alert('등록 완료!');
+    location.href = 'index.html';
+  } else {
+    alert('등록 실패!');
+  }
+});
+
+</script>
+
 </body>
 </html>
