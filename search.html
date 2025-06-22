@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Re:turn - 분실물 찾기</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // 예시 데이터 (실제 개발 시 서버에서 받아오거나 localStorage 등에서 불러올 수 있음)
+    const items = [
+      { 
+        type: '분실물', 
+        name: '지갑', 
+        place: '도서관', 
+        date: '2025-06-01', 
+        desc: '검정색 가죽, 카드 3장',
+        photo: 'https://via.placeholder.com/60x60?text=지갑'
+      },
+      { 
+        type: '분실물', 
+        name: '우산', 
+        place: '카페', 
+        date: '2025-05-28', 
+        desc: '파란색 3단 우산',
+        photo: 'https://via.placeholder.com/60x60?text=우산'
+      },
+      { 
+        type: '습득물', 
+        name: '이어폰', 
+        place: '강의실', 
+        date: '2025-06-03', 
+        desc: '흰색 무선 이어폰',
+        photo: 'https://via.placeholder.com/60x60?text=이어폰'
+      },
+      { 
+        type: '습득물', 
+        name: '학생증', 
+        place: '버스정류장', 
+        date: '2025-06-02', 
+        desc: '홍길동 이름, 파란색 카드지갑',
+        photo: 'https://via.placeholder.com/60x60?text=학생증'
+      },
+    ];
+
+    // 검색 및 리스트 갱신 함수
+    function renderList() {
+      const keyword = document.getElementById('search-input').value.trim();
+      const list = document.getElementById('item-list');
+      const type = document.querySelector('input[name="type"]:checked').value;
+      list.innerHTML = '';
+
+      // 타입과 키워드로 동시 필터링
+      const filtered = items.filter(item =>
+        (type === 'all' || item.type === type) &&
+        (item.name.includes(keyword) ||
+         item.place.includes(keyword) ||
+         item.desc.includes(keyword))
+      );
+
+      if (filtered.length === 0) {
+        list.innerHTML = '<li class="text-gray-400 py-4">검색 결과가 없습니다.</li>';
+        return;
+      }
+
+      filtered.forEach(item => {
+        const color = item.type === '분실물' ? 'text-blue-500' : 'text-green-500';
+        list.innerHTML += `
+          <li class="mb-4 border-b pb-2 flex items-center">
+            <img src="${item.photo}" alt="사진" class="w-16 h-16 object-cover rounded mr-4 border" />
+            <div>
+              <span class="font-semibold ${color}">${item.type}</span> |
+              <span class="font-bold">${item.name}</span>
+              <span class="text-gray-500 ml-2">${item.place} (${item.date})</span>
+              <div class="text-gray-700 mt-1 text-sm">${item.desc}</div>
+            </div>
+          </li>
+        `;
+      });
+    }
+
+    // 이벤트 연결
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('search-input').addEventListener('input', renderList);
+      renderList();
+    });
+  </script>
+</head>
+<body class="bg-gray-50 font-sans">
+  <header class="bg-white shadow p-4 flex items-center justify-between">
+      <a href="index.html" class="text-2xl font-bold text-blue-600 hover:text-blue-700 cursor-pointer">
+    Re:turn
+  </a>
+    <nav class="space-x-4">
+      <a href="register.html" class="hover:text-blue-500">등록</a>
+      <a href="search.html" class="text-blue-500 font-semibold">찾기</a>
+      <a href="match.html" class="hover:text-blue-500">매칭</a>
+      <a href="board.html" class="hover:text-blue-500">전체게시판</a>
+      <a href="chat.html" class="hover:text-blue-500">채팅</a>
+    </nav>
+  </header>
+  <main class="max-w-2xl mx-auto mt-10 bg-white p-8 rounded shadow">
+    <h2 class="text-xl font-bold mb-6 text-gray-800">분실물/습득물 검색</h2>
+    <div class="mb-4 flex items-center space-x-6">
+      <label class="flex items-center">
+        <input type="radio" name="type" value="all" checked class="mr-2" onchange="renderList()" />
+        <span class="font-semibold text-gray-700">전체</span>
+      </label>
+      <label class="flex items-center">
+        <input type="radio" name="type" value="분실물" class="mr-2" onchange="renderList()" />
+        <span class="font-semibold text-blue-600">분실물</span>
+      </label>
+      <label class="flex items-center">
+        <input type="radio" name="type" value="습득물" class="mr-2" onchange="renderList()" />
+        <span class="font-semibold text-green-600">습득물</span>
+      </label>
+    </div>
+    <input id="search-input" type="text" class="w-full p-2 border rounded mb-6" placeholder="검색어를 입력하세요..." autocomplete="off" />
+    <ul id="item-list"></ul>
+  </main>
+</body>
+</html>
