@@ -7,9 +7,9 @@
 </head>
 <body class="bg-gray-50 font-sans">
   <header class="bg-white shadow p-6 flex items-center justify-between">
-      <a href="index.html" class="text-2xl font-bold text-blue-600 hover:text-blue-700 cursor-pointer">
-    DA:Return
-  </a>
+    <a href="index.html" class="text-2xl font-bold text-blue-600 hover:text-blue-700 cursor-pointer">
+      DA:Return
+    </a>
     <nav class="space-x-6 text-lg">
       <a href="register.html" class="hover:text-blue-500">등록</a>
       <a href="search.html" class="hover:text-blue-500">찾기</a>
@@ -18,6 +18,7 @@
       <a href="chat.html" class="hover:text-blue-500">채팅</a>
     </nav>
   </header>
+
   <main class="max-w-6xl mx-auto mt-16 bg-white p-12 rounded shadow-lg min-h-[700px]">
     <h2 class="text-2xl font-bold mb-10 text-gray-800">분실물-습득물 매칭</h2>
     <div class="flex gap-16">
@@ -38,19 +39,26 @@
             <input type="file" accept="image/*" class="hidden" />
           </label>
         </div>
+
         <!-- 사진 미리보기 (예시) -->
         <div class="w-full h-64 bg-gray-200 flex items-center justify-center rounded text-3xl text-gray-400">
           사진
         </div>
-        <!-- 인식한 카테고리 or 사용자 선택 -->
-        <select class="w-full p-3 border rounded text-lg">
-          <option>카테고리 선택</option>
-          <option>전자기기</option>
-          <option>지갑/금전</option>
-          <option>의류</option>
-          <option>기타</option>
-        </select>
+
+        <!-- 카테고리 선택 + 기타 입력 -->
+        <div class="flex flex-col gap-2">
+          <select id="categorySelect" class="w-full p-3 border rounded text-lg">
+            <option>카테고리 선택</option>
+            <option>전자기기</option>
+            <option>지갑/금전</option>
+            <option>의류</option>
+            <option>기타</option>
+          </select>
+          <input id="customCategory" type="text" placeholder="카테고리를 직접 입력하세요"
+                 class="w-full p-3 border rounded text-lg hidden" />
+        </div>
       </div>
+
       <!-- 우측: 매칭 기능 사용 방법 안내 -->
       <div class="w-1/2 flex flex-col">
         <div class="w-full h-80 p-6 border rounded bg-gray-50 text-xl text-gray-700 leading-relaxed overflow-y-auto">
@@ -59,9 +67,26 @@
           2. <b>매칭 요청</b> 버튼을 클릭하시면 시스템이 유사한 항목을 자동으로 매칭합니다.<br><br>
           3. 매칭 요청 후에는 <b>채팅</b>을 통해 직접 연락이 가능합니다.<br><br>
         </div>
-        <button class="mt-6 w-full bg-blue-500 text-white py-3 rounded hover:bg-blue-600 text-xl font-semibold">매칭 요청</button>
+        <button class="mt-6 w-full bg-blue-500 text-white py-3 rounded hover:bg-blue-600 text-xl font-semibold">
+          매칭 요청
+        </button>
       </div>
     </div>
   </main>
+
+  <!-- 카테고리 '기타' 선택 시 입력창 보이게 하는 스크립트 -->
+  <script>
+    const categorySelect = document.getElementById('categorySelect');
+    const customCategory = document.getElementById('customCategory');
+
+    categorySelect.addEventListener('change', () => {
+      if (categorySelect.value === '기타') {
+        customCategory.classList.remove('hidden');
+      } else {
+        customCategory.classList.add('hidden');
+        customCategory.value = '';
+      }
+    });
+  </script>
 </body>
 </html>
